@@ -1,3 +1,4 @@
 syntax: glob
 packer_cache/
 output/
+*.pyc
