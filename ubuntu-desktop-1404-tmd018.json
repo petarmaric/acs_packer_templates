@@ -1,0 +1,79 @@
+{
+	"variables": {
+		"base_name": "ubuntu-desktop-1404-tmd018",
+
+		"boot_command_prefix": "<enter><esc><esc><enter>",
+		"headless_install": "false",
+
+		"ssh_username": "student",		
+		"ssh_password": "student"
+	},
+	
+	"builders": [{
+		"name": "{{user `base_name`}}.amd64.virtualbox",
+		"type": "virtualbox-iso",
+		"format": "ova",
+
+		"iso_url": "http://www.acs.uns.ac.rs/sr/filebrowser/download/315",
+		"iso_checksum_type": "md5",
+		"iso_checksum": "a1e6f41d9815c13cc4943a888ed36fb4",
+
+		"vm_name": "{{build_name}}",
+		"output_directory": "output/{{build_name}}",
+		"guest_os_type": "Ubuntu_64",
+		"vboxmanage": [
+			["modifyvm", "{{.Name}}", "--memory", "2048"],
+			["modifyvm", "{{.Name}}", "--vram", "32"],
+
+			["modifyvm", "{{.Name}}", "--clipboard", "bidirectional"],
+			["modifyvm", "{{.Name}}", "--draganddrop", "bidirectional"]
+		],
+
+		"headless": "{{ user `headless_install` }}",
+
+		"ssh_username": "{{ user `ssh_username` }}",
+		"ssh_password": "{{ user `ssh_password` }}",
+		"ssh_wait_timeout": "3600s",
+
+		"http_directory" : "preseed",
+		"boot_wait": "5s",
+		"boot_command": [
+			"{{ user `boot_command_prefix` }}<wait>",
+
+			"/casper/vmlinuz.efi ",
+			"automatic-ubiquity noprompt ",
+			"url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/{{user `base_name`}}.cfg ",
+			"hostname={{ .Name }} ",
+			"debian-installer=en_US auto locale=en_US kbd-chooser/method=us ",
+			"fb=false debconf/frontend=noninteractive ",
+			"keyboard-configuration/modelcode=SKIP keyboard-configuration/layout=USA ",
+			"keyboard-configuration/variant=USA console-setup/ask_detect=false ",
+
+			"boot=casper initrd=/casper/initrd.lz quiet -- <enter>"
+		],
+
+		"shutdown_command": "echo '{{ user `ssh_password` }}' | sudo -S shutdown -P now"
+	}],
+
+	"provisioners": [{
+		"type": "shell",
+
+		"environment_vars": [
+			"DEBIAN_FRONTEND=noninteractive",
+			"SSH_USERNAME={{user `ssh_username`}}"
+		],
+		
+		"execute_command": "echo '{{ user `ssh_password` }}' | {{.Vars}} sudo -E -S bash '{{.Path}}'",
+		"scripts": [
+			"scripts/disable-release-upgrader.sh",
+			"scripts/update-ubuntu-packages.sh",
+
+			"scripts/disable-screen-blanking.sh",
+			"scripts/configure-auto-login.sh",
+			"scripts/install-virtualbox-guest-additions.sh",
+
+			"scripts/minimize-disk-usage.sh",
+			"scripts/whiteout.sh"
+		]
+	}]
+}
