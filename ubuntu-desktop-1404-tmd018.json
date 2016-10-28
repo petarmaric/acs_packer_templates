@@ -3,7 +3,7 @@
 		"base_name": "ubuntu-desktop-1404-tmd018",
 
 		"boot_command_prefix": "<enter><esc><esc><enter>",
-		"headless_install": "false",
+		"headless_install": "true",
 
 		"ssh_username": "student",		
 		"ssh_password": "student"
