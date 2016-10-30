@@ -28,4 +28,4 @@ def rebuild_all():
         build(filename)
 
     print
-    print 'Please remember to upload the generated OVA files to https://bitbucket.org/petar/packer-acs-templates/downloads'
+    print 'Please remember to upload the generated OVA files to http://vm.petarmaric.com/acs/'
