@@ -6,7 +6,7 @@ USERNAME=${SSH_USERNAME}
 
 if [[ $PACKER_BUILDER_TYPE =~ virtualbox ]]; then
     VBOX_VERSION=$(cat /home/${USERNAME}/.vbox_version)
-    
+
     # Assuming the following packages are installed
     apt-get install -y linux-headers-$(uname -r) build-essential perl
     apt-get install -y dkms
@@ -15,7 +15,10 @@ if [[ $PACKER_BUILDER_TYPE =~ virtualbox ]]; then
     mount -o loop /home/${USERNAME}/VBoxGuestAdditions.iso /mnt
     sh /mnt/VBoxLinuxAdditions.run
     umount /mnt
-    
+
+    echo "==> Allowing user access to the automatically mounted VirtualBox shared folders"
+    usermod -a -G vboxsf ${USERNAME}
+
     # Cleanup
     rm /home/${USERNAME}/VBoxGuestAdditions.iso
     rm /home/${USERNAME}/.vbox_version
