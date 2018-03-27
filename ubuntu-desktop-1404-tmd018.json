@@ -5,16 +5,16 @@
 		"boot_command_prefix": "<enter><esc><esc><enter>",
 		"headless_install": "true",
 
-		"ssh_username": "student",		
+		"ssh_username": "student",
 		"ssh_password": "student"
 	},
-	
+
 	"builders": [{
 		"name": "{{user `base_name`}}.amd64.virtualbox",
 		"type": "virtualbox-iso",
 		"format": "ova",
 
-		"iso_url": "http://www.acs.uns.ac.rs/sr/filebrowser/download/315",
+		"iso_url": "http://www.acs.uns.ac.rs/sr/filebrowser/download/2670659",
 		"iso_checksum_type": "md5",
 		"iso_checksum": "a1e6f41d9815c13cc4943a888ed36fb4",
 
@@ -62,8 +62,9 @@
 			"DEBIAN_FRONTEND=noninteractive",
 			"SSH_USERNAME={{user `ssh_username`}}"
 		],
-		
+
 		"execute_command": "echo '{{ user `ssh_password` }}' | {{.Vars}} sudo -E -S bash '{{.Path}}'",
+		"expect_disconnect": "true",
 		"scripts": [
 			"scripts/disable-release-upgrader.sh",
 			"scripts/update-ubuntu-packages.sh",
